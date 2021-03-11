@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+
 public class PlayerController : MonoBehaviour
 {
+    Rigidbody rb;
     PlayerInputs playerInputs;
+
     [SerializeField, Range(0.1f, 10f)]
     float moveSpeed = 5f;
 
@@ -15,7 +19,29 @@ public class PlayerController : MonoBehaviour
     float camRotSpeed = 90f;
 
     float camRotationAmounthY;
+
+    [SerializeField, Range(0.1f, 15f)]
+    float jumpForce = 5f;
+
+    [SerializeField, Range(0.1f, 10f)]
+    float rayLength = 1f;
+
+    [SerializeField]
+    Color rayColor = Color.magenta;
+
+    [SerializeField]
+    LayerMask detectionLayer;
+
+    [SerializeField]
+    Vector3 rayPosition;
+
+    [SerializeField, Range(1f, 5f)]
+    float augmentedFactor = 1f;
+    float augmentedSpeed = 1f;
+    float baseSpeed = 1f;
+
     void Awake() {
+        rb = GetComponent<Rigidbody>();
         playerInputs = new PlayerInputs();
     }
 
@@ -29,22 +55,44 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerInputs.Gameplay.Jump.performed += _ => Jump();
+        playerInputs.Gameplay.Run.performed += _ => augmentedSpeed = augmentedFactor;
+        playerInputs.Gameplay.Run.canceled += _ => augmentedSpeed = baseSpeed;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(new Vector3(Axis.x, 0f, Axis.y) * moveSpeed * Time.deltaTime);
+        //transform.Translate(MovementAxis * moveSpeed * Time.deltaTime);
         camTrs.Rotate(Vector3.right * -CamAxis.y * camRotSpeed * Time.deltaTime);
+
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
-        camTrs.rotation = Quaternion.Euler(camTrs.rotation.x, camRotationAmounthY, camTrs.rotation.z);
+        rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
+        rb.position += Forward *moveSpeed * augmentedSpeed * Time.deltaTime;
     }
+
+    void Jump()
+    {
+        if(!Grounding) return;
+        rb.AddForce(JumpDirection, ForceMode.Impulse);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = rayColor;
+        Gizmos.DrawRay(RelativeRayPosition, -transform.up * rayLength);
+    }
+
+    bool Grounding => Physics.Raycast(RelativeRayPosition, -transform.up, rayLength, detectionLayer);
 
     Vector2 Axis => playerInputs.Gameplay.Movement.ReadValue<Vector2>();
 
     float CamAxisX => playerInputs.Gameplay.CamAxisX.ReadValue<float>();
     float CamAxisY => playerInputs.Gameplay.CamAxisY.ReadValue<float>();
 
-    Vector2 CamAxis => new Vector2(CamAxisX,CamAxisY);
+    Vector2 CamAxis => new Vector2(CamAxisX, CamAxisY);
+    Vector3 MovementAxis => new Vector3(Axis.x, 0f, Axis.y);
+    Vector3 Forward => rb.rotation * MovementAxis;
+    Vector3 JumpDirection => Vector3.up * jumpForce;
+    Vector3 RelativeRayPosition => rayPosition + transform.position;
 }
