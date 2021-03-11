@@ -9,34 +9,21 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     PlayerInputs playerInputs;
 
-    [SerializeField, Range(0.1f, 10f)]
-    float moveSpeed = 5f;
+    [SerializeField, Range(0.1f, 10f)] float moveSpeed = 5f;
 
-    [SerializeField]
-    Transform camTrs;
-    
-    [SerializeField, Range(0.1f, 180f)]
-    float camRotSpeed = 90f;
-
+    [SerializeField] Transform camTrs;
+    [SerializeField, Range(0.1f, 180f)] float camRotSpeed = 90f;
+    [SerializeField] float xClamp = 85f;
+    float xRotation = 0f;
     float camRotationAmounthY;
 
-    [SerializeField, Range(0.1f, 15f)]
-    float jumpForce = 5f;
+    [SerializeField, Range(0.1f, 15f)] float jumpForce = 5f;
+    [SerializeField, Range(0.1f, 10f)] float rayLength = 1f;
+    [SerializeField] Color rayColor = Color.magenta;
+    [SerializeField] LayerMask detectionLayer;
+    [SerializeField]Vector3 rayPosition;
 
-    [SerializeField, Range(0.1f, 10f)]
-    float rayLength = 1f;
-
-    [SerializeField]
-    Color rayColor = Color.magenta;
-
-    [SerializeField]
-    LayerMask detectionLayer;
-
-    [SerializeField]
-    Vector3 rayPosition;
-
-    [SerializeField, Range(1f, 5f)]
-    float augmentedFactor = 1f;
+    [SerializeField, Range(1f, 5f)] float augmentedFactor = 1f;
     float augmentedSpeed = 1f;
     float baseSpeed = 1f;
 
@@ -64,11 +51,18 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         //transform.Translate(MovementAxis * moveSpeed * Time.deltaTime);
-        camTrs.Rotate(Vector3.right * -CamAxis.y * camRotSpeed * Time.deltaTime);
+        //camTrs.Rotate(Vector3.right * -CamAxis.y * camRotSpeed * Time.deltaTime);
 
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
         rb.position += Forward *moveSpeed * augmentedSpeed * Time.deltaTime;
+
+        //restriccion de la camara en Y
+        xRotation -= CamAxis.y * camRotSpeed * Time.deltaTime;
+        xRotation = Mathf.Clamp(xRotation, -xClamp, xClamp);
+        Vector3 targetRotation = transform.eulerAngles;
+        targetRotation.x = xRotation;
+        camTrs.eulerAngles = targetRotation;
     }
 
     void Jump()
