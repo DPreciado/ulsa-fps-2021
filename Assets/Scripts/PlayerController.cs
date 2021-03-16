@@ -27,24 +27,29 @@ public class PlayerController : MonoBehaviour
     float augmentedSpeed = 1f;
     float baseSpeed = 1f;
 
+    [SerializeField] List<Weapon> weapons;
+    int weaponIndex = 0;
+
     void Awake() {
-        rb = GetComponent<Rigidbody>();
-        playerInputs = new PlayerInputs();
+        rb ??= GetComponent<Rigidbody>();
+        playerInputs ??= new PlayerInputs();
     }
 
     void OnEnable() {
-        playerInputs.Enable();
+        playerInputs?.Enable();
     }
 
     void OnDisable() {
-        playerInputs.Disable();
+        playerInputs?.Disable();
     }
     // Start is called before the first frame update
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         playerInputs.Gameplay.Jump.performed += _ => Jump();
         playerInputs.Gameplay.Run.performed += _ => augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _ => augmentedSpeed = baseSpeed;
+        playerInputs.Gameplay.Shoot.performed += _ => weapons[weaponIndex].Shoot();
     }
 
     // Update is called once per frame
