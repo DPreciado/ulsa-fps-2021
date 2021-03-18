@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] Transform spawnPoint;
-    [SerializeField] Object srcProjectile;
+   // [SerializeField] Transform spawnPoint;
+   // [SerializeField] Object srcProjectile;
 
 [SerializeField, Range(1f, 10f)] int damage = 1;
     
@@ -55,4 +55,6 @@ void Start()
         Gizmos.color = rayColor;
         Gizmos.DrawRay(rayOrigin.position, transform.forward * rayDistance);
     }
+
+    public void Active(bool visible) =>gameObject.SetActive(visible);
 }

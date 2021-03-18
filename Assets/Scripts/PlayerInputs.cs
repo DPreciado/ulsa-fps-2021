@@ -65,6 +65,14 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""WeaponChange"",
+                    ""type"": ""Value"",
+                    ""id"": ""8011dcf7-c2af-4c30-86cd-a7a0ac7b660f"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -177,6 +185,17 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""action"": ""CamAxisY"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f13ff779-624b-493c-82a6-aaf70877a32e"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeaponChange"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -208,6 +227,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         m_Gameplay_Run = m_Gameplay.FindAction("Run", throwIfNotFound: true);
         m_Gameplay_CamAxisX = m_Gameplay.FindAction("CamAxisX", throwIfNotFound: true);
         m_Gameplay_CamAxisY = m_Gameplay.FindAction("CamAxisY", throwIfNotFound: true);
+        m_Gameplay_WeaponChange = m_Gameplay.FindAction("WeaponChange", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -263,6 +283,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
     private readonly InputAction m_Gameplay_Run;
     private readonly InputAction m_Gameplay_CamAxisX;
     private readonly InputAction m_Gameplay_CamAxisY;
+    private readonly InputAction m_Gameplay_WeaponChange;
     public struct GameplayActions
     {
         private @PlayerInputs m_Wrapper;
@@ -273,6 +294,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         public InputAction @Run => m_Wrapper.m_Gameplay_Run;
         public InputAction @CamAxisX => m_Wrapper.m_Gameplay_CamAxisX;
         public InputAction @CamAxisY => m_Wrapper.m_Gameplay_CamAxisY;
+        public InputAction @WeaponChange => m_Wrapper.m_Gameplay_WeaponChange;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -300,6 +322,9 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @CamAxisY.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamAxisY;
                 @CamAxisY.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamAxisY;
                 @CamAxisY.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCamAxisY;
+                @WeaponChange.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnWeaponChange;
+                @WeaponChange.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnWeaponChange;
+                @WeaponChange.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnWeaponChange;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -322,6 +347,9 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @CamAxisY.started += instance.OnCamAxisY;
                 @CamAxisY.performed += instance.OnCamAxisY;
                 @CamAxisY.canceled += instance.OnCamAxisY;
+                @WeaponChange.started += instance.OnWeaponChange;
+                @WeaponChange.performed += instance.OnWeaponChange;
+                @WeaponChange.canceled += instance.OnWeaponChange;
             }
         }
     }
@@ -343,5 +371,6 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnCamAxisX(InputAction.CallbackContext context);
         void OnCamAxisY(InputAction.CallbackContext context);
+        void OnWeaponChange(InputAction.CallbackContext context);
     }
 }

@@ -49,14 +49,12 @@ public class PlayerController : MonoBehaviour
         playerInputs.Gameplay.Jump.performed += _ => Jump();
         playerInputs.Gameplay.Run.performed += _ => augmentedSpeed = augmentedFactor;
         playerInputs.Gameplay.Run.canceled += _ => augmentedSpeed = baseSpeed;
-        playerInputs.Gameplay.Shoot.performed += _ => weapons[weaponIndex].Shoot();
+        playerInputs.Gameplay.Shoot.performed += _ => CurrentWeapon.Shoot();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //transform.Translate(MovementAxis * moveSpeed * Time.deltaTime);
-        //camTrs.Rotate(Vector3.right * -CamAxis.y * camRotSpeed * Time.deltaTime);
 
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
@@ -68,6 +66,44 @@ public class PlayerController : MonoBehaviour
         Vector3 targetRotation = transform.eulerAngles;
         targetRotation.x = xRotation;
         camTrs.eulerAngles = targetRotation;
+
+        if(WheelAxisYClamped != 0f)
+        {
+            CurrentWeapon.Active(false);
+            //inicio cambio de arma
+            /*if(WheelAxisYClampInt + weaponIndex >= 0 && WheelAxisYClampInt + weaponIndex < weapons.Count)
+            {
+                weaponIndex += WheelAxisYClampInt;
+            }
+            else if()*/
+           /* weaponIndex += WheelAxisYClampInt + weaponIndex >= 0 && 
+            WheelAxisYClampInt + weaponIndex < weapons.Count ? 
+            WheelAxisYClampInt + weaponIndex == weapons.Count ?
+            0:  WheelAxisYClampInt : weapons.Count - 1;
+            Debug.Log(weaponIndex);*/
+            if(WheelAxisYClampInt + weaponIndex >= 0)
+            {
+                if(WheelAxisYClampInt + weaponIndex < weapons.Count)
+                {
+                    weaponIndex += WheelAxisYClampInt;
+                }
+                else
+                {
+                    if(WheelAxisYClampInt + weaponIndex >= weapons.Count)
+                    {
+                        weaponIndex = 0;
+                    }
+                }
+            }
+            else
+            {
+                weaponIndex = weapons.Count - 1;
+            }
+            //fin cambio de arma
+            CurrentWeapon.Active(true);
+
+            Debug.Log(weaponIndex);
+        }
     }
 
     void Jump()
@@ -94,4 +130,16 @@ public class PlayerController : MonoBehaviour
     Vector3 Forward => rb.rotation * MovementAxis;
     Vector3 JumpDirection => Vector3.up * jumpForce;
     Vector3 RelativeRayPosition => rayPosition + transform.position;
+
+    int WheelAxisYClampInt => (int)Mathf.Ceil(WheelAxisYClamped);
+
+    float WheelAxisYClamped => Mathf.Clamp(WheelAxisY, -1, 1);
+
+    float WheelAxisY => playerInputs.Gameplay.WeaponChange.ReadValue<float>();
+
+    Weapon CurrentWeapon => weapons[weaponIndex];
+
+    //Weapon CurrentWeapon => weapons[0];
+    
+
 }
