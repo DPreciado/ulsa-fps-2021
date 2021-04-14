@@ -21,6 +21,7 @@ public class Weapon : MonoBehaviour
     [SerializeField, Range(0.1f, 100f)] float force = 10f;
     [SerializeField] Transform reticleTrs;
     [SerializeField] Vector3 reticleInitialScale;
+    [SerializeField] public AudioClip shootSFX;
     //GameObject currentProjectile;
     
     public void Shoot()

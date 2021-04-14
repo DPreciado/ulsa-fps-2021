@@ -2407,6 +2407,7 @@ MonoBehaviour:
   force: 22
   reticleTrs: {fileID: 463074874}
   reticleInitialScale: {x: 0, y: 0, z: 0}
+  shootSFX: {fileID: 8300000, guid: a774ce7a6f25eef46889298edcef0597, type: 3}
 --- !u!1 &1001702319
 GameObject:
   m_ObjectHideFlags: 0
@@ -3934,6 +3935,7 @@ GameObject:
   - component: {fileID: 1670454626}
   - component: {fileID: 1670454625}
   - component: {fileID: 1670454630}
+  - component: {fileID: 1670454631}
   m_Layer: 0
   m_Name: Player FPS
   m_TagString: Untagged
@@ -3968,6 +3970,12 @@ MonoBehaviour:
   weapons:
   - {fileID: 945559560}
   - {fileID: 2004395468}
+  walkFootStepSFX: {fileID: 8300000, guid: c9a59fa23208692449443a0cdac009ad, type: 3}
+  runFootStepSFX: {fileID: 8300000, guid: 553345d0bf59fd043b3317e9c7b08d55, type: 3}
+  walkFootStepPitch: 1
+  runFootStepPitch: 1
+  jumpoSFX: {fileID: 8300000, guid: 96ecdbc3acca76d4db207d5f2f0d23ac, type: 3}
+  WeaponsChangeSFX: {fileID: 8300000, guid: c7d898004e349eb4da82490b171b7435, type: 3}
 --- !u!136 &1670454626
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4062,6 +4070,102 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!82 &1670454631
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670454624}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1696613443
 GameObject:
   m_ObjectHideFlags: 0
@@ -4813,6 +4917,7 @@ MonoBehaviour:
   force: 10
   reticleTrs: {fileID: 463074874}
   reticleInitialScale: {x: 0, y: 0, z: 0}
+  shootSFX: {fileID: 8300000, guid: fb78e83762597274c8dade0acf6a7014, type: 3}
 --- !u!4 &2004395469
 Transform:
   m_ObjectHideFlags: 0

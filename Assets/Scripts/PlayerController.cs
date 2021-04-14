@@ -29,10 +29,19 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] List<Weapon> weapons;
     int weaponIndex = 0;
+    AudioSource audioSource;
+    [SerializeField] AudioClip walkFootStepSFX;
+    [SerializeField] AudioClip runFootStepSFX;
+    [SerializeField, Range(-2f, 2f)] float walkFootStepPitch = 1;
+    [SerializeField, Range(-2f, 2f)] float runFootStepPitch = 1;
+    [SerializeField] AudioClip jumpoSFX;
+    AudioClip WeaponsShotSFX;
+    [SerializeField] AudioClip WeaponsChangeSFX;
 
     void Awake() {
         rb ??= GetComponent<Rigidbody>();
         playerInputs ??= new PlayerInputs();
+        audioSource ??= GetComponent<AudioSource>();
     }
 
     void OnEnable() {
@@ -47,9 +56,61 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         playerInputs.Gameplay.Jump.performed += _ => Jump();
-        playerInputs.Gameplay.Run.performed += _ => augmentedSpeed = augmentedFactor;
-        playerInputs.Gameplay.Run.canceled += _ => augmentedSpeed = baseSpeed;
-        playerInputs.Gameplay.Shoot.performed += _ => CurrentWeapon.Shoot();
+        playerInputs.Gameplay.Run.performed += _ => Run();
+        playerInputs.Gameplay.Run.canceled += _ => CancelRun();
+        playerInputs.Gameplay.Shoot.performed += _ => Shoot();
+        playerInputs.Gameplay.Movement.performed += _ => Movement();
+        playerInputs.Gameplay.Movement.canceled += _ => CancelMovement();
+    }
+
+    void Shoot()
+    {
+        CurrentWeapon.Shoot();
+        WeaponsShotSFX = CurrentWeapon.shootSFX;
+        audioSource.PlayOneShot(WeaponsShotSFX);
+    }
+
+    void Run()
+    {
+        augmentedSpeed = augmentedFactor;
+
+        if(!Grounding) return;
+        audioSource.clip = runFootStepSFX;
+        audioSource.loop = true;
+        audioSource.pitch = runFootStepPitch;
+        audioSource?.Play();
+    }
+
+    void CancelRun()
+    {
+        augmentedSpeed = baseSpeed;
+        audioSource?.Stop();
+        audioSource.clip = null;
+        audioSource.loop = false;
+        audioSource.pitch = 1f;
+        if(Axis != Vector2.zero)
+        {
+            audioSource.clip = walkFootStepSFX;
+            audioSource.loop = true;
+            audioSource.pitch = walkFootStepPitch;
+            audioSource?.Play();
+        }
+    }
+
+    void Movement()
+    {
+        if(audioSource.isPlaying || !Grounding) return;
+        audioSource.clip = walkFootStepSFX;
+        audioSource.loop = true;
+        audioSource.pitch = walkFootStepPitch;
+        audioSource.Play();
+    }
+
+    void CancelMovement()
+    {
+        audioSource?.Stop();
+        audioSource.clip = null;
+        audioSource.loop = false;
     }
 
     // Update is called once per frame
@@ -69,6 +130,9 @@ public class PlayerController : MonoBehaviour
 
         if(WheelAxisYClamped != 0f)
         {
+            //audio fx inicio
+            audioSource.PlayOneShot(WeaponsChangeSFX);
+            //audio fx fin
             CurrentWeapon.Active(false);
             //inicio cambio de arma
             /*if(WheelAxisYClampInt + weaponIndex >= 0 && WheelAxisYClampInt + weaponIndex < weapons.Count)
@@ -109,6 +173,9 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         if(!Grounding) return;
+        //audioSource.clip = jumpoSFX;
+        audioSource?.Stop();
+        audioSource.PlayOneShot(jumpoSFX, 7f);
         rb.AddForce(JumpDirection, ForceMode.Impulse);
     }
 
