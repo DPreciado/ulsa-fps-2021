@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAPI;
 
 [RequireComponent(typeof(Rigidbody))]
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     Rigidbody rb;
     PlayerInputs playerInputs;
@@ -38,6 +39,21 @@ public class PlayerController : MonoBehaviour
     AudioClip WeaponsShotSFX;
     [SerializeField] AudioClip WeaponsChangeSFX;
 
+    public override void NetworkStart()
+    {
+        base.NetworkStart();
+        /* foreach(MLAPI.Connection.NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            Debug.Log(client.PlayerObject.name);
+        } */
+        /* NetworkManager.Singleton.OnClientConnectedCallback += client =>{
+            Debug.Log(client);
+        }; */
+        NetworkObject.name = Gamemanager.instance.currentUsername;
+        Debug.Log(NetworkObject.name);
+        //NetworkManager.Singleton.LocalClientId;
+    }
+
     void Awake() {
         rb ??= GetComponent<Rigidbody>();
         playerInputs ??= new PlayerInputs();
@@ -54,13 +70,19 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        playerInputs.Gameplay.Jump.performed += _ => Jump();
-        playerInputs.Gameplay.Run.performed += _ => Run();
-        playerInputs.Gameplay.Run.canceled += _ => CancelRun();
-        playerInputs.Gameplay.Shoot.performed += _ => Shoot();
-        playerInputs.Gameplay.Movement.performed += _ => Movement();
-        playerInputs.Gameplay.Movement.canceled += _ => CancelMovement();
+        if(IsLocalPlayer)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            playerInputs.Gameplay.Jump.performed += _ => Jump();
+            playerInputs.Gameplay.Run.performed += _ => Run();
+            playerInputs.Gameplay.Run.canceled += _ => CancelRun();
+            playerInputs.Gameplay.Shoot.performed += _ => Shoot();
+            playerInputs.Gameplay.Movement.performed += _ => Movement();
+            playerInputs.Gameplay.Movement.canceled += _ => CancelMovement();
+        }else
+        {
+            camTrs.gameObject.SetActive(false);
+        }
     }
 
     void Shoot()
@@ -116,7 +138,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if(!IsLocalPlayer) return;
+        //if(!NetworkManager.Singleton.IsHost) return;
         camRotationAmounthY += CamAxis.x * camRotSpeed * Time.deltaTime;
         rb.rotation = Quaternion.Euler(rb.rotation.x, camRotationAmounthY, rb.rotation.z);
         rb.position += Forward *moveSpeed * augmentedSpeed * Time.deltaTime;
